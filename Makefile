@@ -9,7 +9,7 @@ liblogger.a: $(OBJS)
 	ar r $@ $(OBJS)
 
 demo: demo.o liblogger.a
-	$(CC) $(CFLAGS) -o $@ demo.c liblogger.a
+	$(CC) $(CFLAGS) -o $@ demo.c -L. -llogger
 
 clean:
 	rm -f *.o *~ *.a
