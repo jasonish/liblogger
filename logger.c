@@ -250,7 +250,7 @@ logger_log(int log_level, const char *fmt, va_list ap)
 	if (log_level >= logger.log_level) {
 		/* Build the time. */
 		gettimeofday(&tv, NULL);
-		localtime_r(&tv.tv_sec, &tm);
+		localtime_r((time_t *)&tv.tv_sec, &tm);
 		snprintf(date, sizeof(date),
 		    "%d-%02d-%02d %02d:%02d:%02d,%03ld",
 		    1900 + tm.tm_year,
