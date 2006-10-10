@@ -6,7 +6,7 @@ OBJS =		$(SRCS:.c=.o)
 all: liblogger.a demo
 
 liblogger.a: $(OBJS)
-	ar r $@ $^
+	ar r $@ $(OBJS)
 
 demo: demo.o liblogger.a
 	$(CC) $(CFLAGS) -o $@ demo.c liblogger.a
