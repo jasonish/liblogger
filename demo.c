@@ -9,6 +9,8 @@ log_callback(char *msg, void *arg)
 int
 main(int argc, char **argv)
 {
+	int i;
+
 	/* Initialize the logger module. */
 	logger_init(LOG_LEVEL_DEBUG);
 
@@ -18,8 +20,14 @@ main(int argc, char **argv)
 	/* Add a callback handler. */
 	logger_add_callback_handler(log_callback, NULL);
 
+	/* Add a rotating file handler. */
+	logger_add_rotating_handler("demo_log", 5000, 3);
+
 	/* Log an info message. */
-	log_info("This is an info test: %s:%d", __FILE__, __LINE__);
+	for (i = 0; i < 5; i++) {
+		log_info("Info log %d", i);
+		log_debug("Debug log %d", i);
+	}
 
 	/* Reset the logger - frees all allocated resources and keeps
 	 * valgrind happy. */

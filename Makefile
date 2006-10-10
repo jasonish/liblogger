@@ -13,5 +13,5 @@ demo: demo.o liblogger.a
 
 clean:
 	rm -f *.o *~ *.a
-	rm -f demo
+	rm -f demo demo_log
 	cd python && $(MAKE) $@
