@@ -28,3 +28,7 @@ LOGGER TYPES
         is created.  The number of rolled over log files to keep is
         configurable to control disk usage.
 
+TODO
+
+    Make thread safe.
+
