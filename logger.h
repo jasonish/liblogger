@@ -7,13 +7,27 @@
 extern "C" {
 #endif
 
-/* Log levels. */
-enum {
+/**
+ * @defgroup logger
+ *
+ * This module implements a basic, simple to use logging facility for
+ * your application.
+ *
+ * @{
+ */
+
+/**
+ * Available logging levels.
+ */
+enum log_levels {
 	LOG_LEVEL_NONE = 0,
-	LOG_LEVEL_DEBUG,
-	LOG_LEVEL_INFO,
+	LOG_LEVEL_DEBUG,    /**< Debug. */
+	LOG_LEVEL_INFO,     /**< Informational. */
 };
 
+/**
+ * The opaque datatype to deal with log handlers.
+ */
 typedef struct log_handler log_handler_t;
 
 /**
@@ -34,8 +48,8 @@ log_handler_t *logger_add_callback_handler(void (*cb)(char *msg, void *arg),
  * overwriting an existing file of this name or appending to it.
  *
  * @param filename The filename to log to.
- * @param If 1 the file will be opened in append mode, otherwise the file
- *     will be overwritten if it exists.
+ * @param append If 1 the file will be opened in append mode, otherwise
+ *     the file will be overwritten if it exists.
  */
 log_handler_t *
 logger_add_file_handler(char *filename, int append);
@@ -60,18 +74,21 @@ log_handler_t *logger_add_rotating_handler(const char *filename, int size,
     int count);
 
 /**
+ * Remove a handler from the logger.  The pointer to the handler is
+ * invalid after this operation as its resources will have been freed.
+ *
+ * @param handler A pointer to the handler to free.
+ */
+void logger_remove_handler(log_handler_t *handler);
+
+
+/**
  * Initialize the logger module.  This must be called before any other
  * logger functions.  It can be recalled to change the log level.
  *
  * @param log_level The log level to set the logger module to.
  */
 void logger_init(int log_level);
-
-/**
- * Free a log handler.  Useful if you want to remove a previously
- * added log handler.
- */
-void logger_free_handler(log_handler_t *handler);
 
 /**
  * Reset the logger.  Removes (and frees) all currently active handlers.
@@ -87,6 +104,8 @@ void log_info(const char *fmt, ...);
  * Log a debug message.
  */
 void log_debug(const char *fmt, ...);
+
+/* }@ */
 
 #ifdef __cplusplus
 }

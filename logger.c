@@ -296,12 +296,12 @@ logger_reset(void)
 	
 	/* Remove all log handler. */
 	while ((handler = TAILQ_FIRST(&logger.handlers))) {
-		logger_free_handler(handler);
+		logger_remove_handler(handler);
 	}
 }
 	    
 void
-logger_free_handler(log_handler_t *handler)
+logger_remove_handler(log_handler_t *handler)
 {
 	/* If the logger is initialized, remove this specific handler
 	 * from the handler list. */
