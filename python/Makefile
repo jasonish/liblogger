@@ -1,4 +1,4 @@
-INCLUDE = -I/usr/include/python2.4
+INCLUDE = -I/usr/include/python2.3
 CFLAGS = -O2 -g $(INCLUDE)
 
 PYREXC ?= pyrexc

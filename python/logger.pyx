@@ -1,6 +1,5 @@
 cdef extern from "Python.h":
-    ctypedef struct PyObject:
-        pass
+    ctypedef struct PyObject
 
     void Py_INCREF(PyObject *)
     void Py_DECREF(PyObject *)
@@ -10,11 +9,10 @@ cdef extern from "../logger.h":
         LOG_LEVEL_DEBUG
         LOG_LEVEL_INFO
 
-    ctypedef struct log_handler_t:
-        pass
+    ctypedef struct log_handler_t
 
     void logger_init(int log_level)
-    void logger_free_handler(log_handler_t *handler)
+    void logger_remove_handler(log_handler_t *handler)
     void log_info(char *fmt, ...)
 
     log_handler_t *logger_add_callback_handler(void (*cb)(char *msg,
@@ -32,7 +30,7 @@ cdef class LogHandler:
 
     def __dealloc__(self):
         if self.handler:
-            logger_free_handler(self.handler)
+            logger_remove_handler(self.handler)
 
 cdef class CallbackHandler(LogHandler):
     def __init__(self, callback):

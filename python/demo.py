@@ -10,7 +10,6 @@ def main():
 
     # Add a callback handler.
     h = logger.add_callback_handler(log_callback)
-    print h
 
     # Log an info message.
     logger.info("Testing 1 2 3")
