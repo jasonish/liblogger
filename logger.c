@@ -14,6 +14,9 @@
 
 #include "logger.h"
 
+/**
+ * Logger types.
+ */
 enum {
 	HANDLER_TYPE_NONE = 0,
 	HANDLER_TYPE_CALLBACK,
@@ -28,6 +31,7 @@ struct log_handler {
 	void (*output)(log_handler_t *handler, const char *date,
 	    const char *msg);
 
+	/* Context information for the different loggers. */
 	union {
 		/* Callback handler info. */
 		struct {
@@ -48,7 +52,7 @@ struct log_handler {
 			int count;
 			int cursize;
 		} rotating_info;
-	} prv;
+	} u;
 
 	/* Log handlers are kept in a list. */
 	TAILQ_ENTRY(log_handler) entries;
@@ -78,8 +82,8 @@ logger_add_callback_handler(void (*cb)(char *msg, void *arg), void *arg)
 	if (handler) {
 		handler->type = HANDLER_TYPE_CALLBACK;
 		handler->output = cb_log_handler_output;
-		handler->prv.cb_info.cb = cb;
-		handler->prv.cb_info.arg = arg;
+		handler->u.cb_info.cb = cb;
+		handler->u.cb_info.arg = arg;
 
 		logger_add_handler(handler);
 	}
@@ -94,7 +98,7 @@ cb_log_handler_output(log_handler_t *handler, const char *date,
 	char *fullmsg;
 
 	asprintf(&fullmsg, "%s: %s", date, msg);
-	(*handler->prv.cb_info.cb)(fullmsg, handler->prv.cb_info.arg);
+	(*handler->u.cb_info.cb)(fullmsg, handler->u.cb_info.arg);
 	free(fullmsg);
 }
 
@@ -107,7 +111,7 @@ logger_add_fp_handler(FILE *fp)
 	if (handler) {
 		handler->type = HANDLER_TYPE_FP;
 		handler->output = fp_log_handler_output;
-		handler->prv.fp_info.fp = fp;
+		handler->u.fp_info.fp = fp;
 
 		logger_add_handler(handler);
 	}
@@ -119,7 +123,7 @@ static void
 fp_log_handler_output(log_handler_t *handler, const char *date,
     const char *msg)
 {
-	fprintf(handler->prv.fp_info.fp, "%s: %s\n", date, msg);
+	fprintf(handler->u.fp_info.fp, "%s: %s\n", date, msg);
 }
 
 log_handler_t *
@@ -142,7 +146,7 @@ logger_add_file_handler(char *filename, int append)
 		/* We can use the fp handler's output function. and
 		 * private data. */
 		handler->output = fp_log_handler_output;
-		handler->prv.fp_info.fp = fp;
+		handler->u.fp_info.fp = fp;
 
 		logger_add_handler(handler);
 	}
@@ -170,7 +174,7 @@ logger_add_rotating_handler(const char *filename, int size, int count)
 		return NULL;
 	handler->type = HANDLER_TYPE_ROTATE;
 	handler->output = rotating_log_handler_output;
-	ri = &handler->prv.rotating_info;
+	ri = &handler->u.rotating_info;
 	ri->fp = fp;
 	ri->maxsize = size;
 	ri->count = count;
@@ -210,7 +214,7 @@ static void
 rotating_log_handler_output(log_handler_t *handler, const char *date,
     const char *msg)
 {
-	struct rotating_info *ri = &handler->prv.rotating_info;
+	struct rotating_info *ri = &handler->u.rotating_info;
 
 	ri->cursize += fprintf(ri->fp, "%s: %s\n", date, msg);
 	if ((ri->maxsize > 0) && (ri->cursize > ri->maxsize))
@@ -318,10 +322,10 @@ logger_remove_handler(log_handler_t *handler)
 	switch (handler->type) {
 	case HANDLER_TYPE_FILE:
 		/* Close the open file. */
-		fclose(handler->prv.fp_info.fp);
+		fclose(handler->u.fp_info.fp);
 	case HANDLER_TYPE_ROTATE:
 		/* Close the currently open file. */
-		fclose(handler->prv.rotating_info.fp);
+		fclose(handler->u.rotating_info.fp);
 		break;
 	default:
 		break;
